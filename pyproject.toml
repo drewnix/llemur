@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "llemur"
+version = "0.1.0"
+description = "a cute animal that hangs out in the LLM jungle"
+authors = ["Andrew Tanner <andrew@drewnix.dev>"]
+license = "MIT Lincense"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+typer = "^0.12.5"
+openai = "^1.51.0"
+
+[tool.poetry.scripts]
+llemur = "llemur.cli:run"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
