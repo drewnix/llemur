@@ -1,19 +1,18 @@
 import subprocess
+
 import typer
 from rich.console import Console
-from rich.syntax import Syntax
-import openai
 
 console = Console()
 
-llemur = typer.Typer(no_args_is_help=True)
 
-
-@llemur.command()
 def cr(
     send: bool = typer.Option(False, "--send", help="Send to OpenAI for code review"),
-    output: str = typer.Option("llemur_prompt.txt", "--output", help="File to dump prompt for review")
+    output: str = typer.Option(
+        "llemur_prompt.txt", "--output", help="File to dump prompt for review"
+    ),
 ):
+    typer.echo("Executing command 'cr'")
     """
     Automated code review.
     Scans git diffs, prepares a prompt, and either sends it to an LLM for review or dumps it to a file.
@@ -29,14 +28,18 @@ def cr(
             return
 
         # Get the filenames involved in the diff
-        files_changed = subprocess.run(["git", "diff", "--name-only"], capture_output=True, text=True).stdout.splitlines()
+        files_changed = subprocess.run(
+            ["git", "diff", "--name-only"], capture_output=True, text=True
+        ).stdout.splitlines()
 
         # Collect relevant context for the changed files
         file_contexts = []
         for filename in files_changed:
             # Get full context from file (adjust this as needed)
-            file_context = subprocess.run(["git", "show", f"HEAD:{filename}"], capture_output=True, text=True).stdout
-            context_lines = get_context_lines(diff, filename, before=20, after=20)  # Adjust for real context extraction
+            # file_context = subprocess.run(["git", "show", f"HEAD:{filename}"], capture_output=True, text=True).stdout
+            context_lines = get_context_lines(
+                diff, filename, before=20, after=20
+            )  # Adjust for real context extraction
             file_contexts.append(f"File: {filename}\n{context_lines}")
 
         # Step 2: Prepare the prompt
@@ -50,33 +53,18 @@ def cr(
 
         if send:
             # Step 3: Send to LLM (OpenAI) if --send flag is used
-            response = call_llm(prompt)
             console.print("\n[bold green]LLM Code Review:[/bold green]")
-            console.print(response)
         else:
             # Step 4: Dump the prompt to a file for review if --send is not used
             with open(output, "w") as fh:
                 fh.write(prompt)
 
-            console.print(f"[bold yellow]Prompt and diff dumped to {output} for review.[/bold yellow]")
+            console.print(
+                f"[bold yellow]Prompt and diff dumped to {output} for review.[/bold yellow]"
+            )
 
     except Exception as e:
         console.print(f"[bold red]Error during code review: {e}[/bold red]")
-
-
-def call_llm(prompt: str) -> str:
-    """
-    Function to call an LLM for the code review (example uses OpenAI).
-    """
-    # Placeholder for actual LLM API interaction
-    # You'd replace this with actual API credentials and client code
-    openai.api_key = "your_openai_api_key"
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=prompt,
-        max_tokens=500,
-    )
-    return response.choices[0].text.strip()
 
 
 def get_context_lines(diff, filename, before=20, after=20):
@@ -135,7 +123,7 @@ def extract_file_diff(diff, filename):
     # Process diff line by line
     for line in diff.splitlines():
         # Start of a new file diff section
-        if line.startswith(f"diff --git") and filename in line:
+        if line.startswith("diff --git") and filename in line:
             in_file = True
         elif line.startswith("diff --git") and in_file:
             # End of the current file diff section
@@ -195,12 +183,3 @@ def get_file_content(filename, start_line, end_line):
     cmd = f"sed -n '{start_line},{end_line}p' {filename}"
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
     return result.stdout.strip()
-
-
-def run() -> None:
-    """Run commands."""
-    llemur()
-
-
-if __name__ == "__main__":
-    run()

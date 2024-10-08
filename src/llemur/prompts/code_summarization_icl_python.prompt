@@ -1,0 +1,42 @@
+As a code summarization assistant, your task is to generate a concise and accurate description
+of what the provided Python code does. Below are some examples to guide you.
+
+Example 1:
+
+```python
+def add_numbers(a, b):
+    return a + b
+```
+Summary: This function add_numbers takes two arguments a and b and returns their sum.
+
+Example 2:
+
+```python
+def is_even(number):
+    if number % 2 == 0:
+        return True
+    return False
+```
+Summary: This function is_even checks if a number is even. It returns True if the number
+is even and False otherwise.
+
+Example 3:
+
+```python
+def factorial(n):
+    if n == 0:
+        return 1
+    else:
+        return n * factorial(n - 1)
+```
+Summary: This recursive function factorial calculates the factorial of a given number n.
+It returns 1 if n is 0, otherwise it returns n multiplied by the factorial of n - 1.
+
+Example 4:
+
+```python
+def reverse_string(s):
+    return s[::-1]
+```
+Summary: This function reverse_string takes a string s and returns the string in reverse order.
+

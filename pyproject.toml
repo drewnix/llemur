@@ -1,18 +1,77 @@
 [tool.poetry]
 name = "llemur"
 version = "0.1.0"
-description = "a cute animal that hangs out in the LLM jungle"
+description = "A cute animal that hangs out in the LLM jungle"
 authors = ["Andrew Tanner <andrew@drewnix.dev>"]
 license = "MIT Lincense"
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-typer = "^0.12.5"
+typer = "^0.9.0"
 openai = "^1.51.0"
+rich = "^13.9.1"
+pydantic-settings = "^2.5.2"
+transformers = "^4.45.1"
+torch = "^2.4.1"
+anthropic = "^0.35.0"
 
 [tool.poetry.scripts]
-llemur = "llemur.cli:run"
+llemur = "llemur.main:llemur"
+
+[tool.black]
+line-length = 100
+
+[tool.isort]
+line_length = "100"
+profile = "black"
+
+[tool.flake8]
+max-line-length = "100"
+inline-quotes = "double"
+extend-exclude = ".venv"
+extend-ignore = ["PL123"]
+per-file-ignores = [
+    "__init__.py:F401"
+]
+
+[tool.pytest.ini_options]
+addopts = "-v --junitxml=pytest.xml --doctest-modules"
+python_files = "test_*.py"
+log_level = "DEBUG"
+
+[tool.coverage.run]
+branch = "true"
+omit = ["test_*.py"]
+command_line = "-m pytest"
+source = ["src"]
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.coverage.xml]
+output = "cov.xml"
+
+[[tool.mypy.overrides]]
+module=[
+    "emails.*",
+    "transformers.*"
+]
+ignore_missing_imports = true
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.11.2"
+black = "^24.10.0"
+isort = "^5.13.2"
+flake8 = "^7.1.1"
+pytest = "^8.3.3"
+pytest-cov = "^5.0.0"
+poethepoet = "^0.29.0"
+
+[tool.poe.tasks]
+format = { shell = "isort src && black src && flake8 src && mypy src" }
+test = { shell = "pytest src/zenith/tests" }
+check = { shell = "isort --check src && black --check src && flake8 src && mypy src" }
 
 [build-system]
 requires = ["poetry-core"]
